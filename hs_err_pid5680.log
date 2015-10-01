@@ -1,0 +1,398 @@
+#
+# An unexpected error has been detected by HotSpot Virtual Machine:
+#
+#  SIGSEGV (0xb) at pc=0xb71318d0, pid=5680, tid=2645273456
+#
+# Java VM: Java HotSpot(TM) Server VM (1.5.0-b64 mixed mode)
+# Problematic frame:
+# V  [libjvm.so+0x41c8d0]
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x09d98450):  GCTaskThread [id=5689]
+
+siginfo:si_signo=11, si_errno=0, si_code=1, si_addr=0xf40737c0
+
+Registers:
+EAX=0xf4073788, EBX=0xb7267acc, ECX=0xb0c807e8, EDX=0xf4073790
+ESP=0x9daba020, EBP=0x9daba098, ESI=0xa1dced98, EDI=0xa1dce814
+EIP=0xb71318d0, CR2=0xf40737c0, EFLAGS=0x00010293
+
+Top of Stack: (sp=0x9daba020)
+0x9daba020:   09da9e64 9daba080 00001000 b71318b0
+0x9daba030:   0009daba 09d98450 9daba118 b70f6dd6
+0x9daba040:   09d97b50 00000001 00001000 b70f6d81
+0x9daba050:   00000006 00000000 1ee4ab60 00000000
+0x9daba060:   00000006 00000000 00000001 b112b010
+0x9daba070:   00000006 00000001 00000001 b6f46e61
+0x9daba080:   b112add0 00001000 00001000 b7267acc
+0x9daba090:   a1dced98 a1dce814 9daba0d8 b6f46f7c 
+
+Instructions: (pc=0xb71318d0)
+0xb71318c0:   8b 4d 0c c7 45 bc 00 00 00 00 8b 41 04 8d 50 08
+0xb71318d0:   8b 4a 30 89 4d b8 85 c9 0f 8e e2 04 00 00 8b 45 
+
+Stack: [0x9da3a000,0x9dabb000),  sp=0x9daba020,  free space=512k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [libjvm.so+0x41c8d0]
+V  [libjvm.so+0x231f7c]
+V  [libjvm.so+0x1467b9]
+V  [libjvm.so+0x41eab9]
+V  [libjvm.so+0x1fbd0f]
+V  [libjvm.so+0x3e2de8]
+C  [libpthread.so.0+0x580e]
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x0a4fb888 JavaThread "Keep-Alive-Timer" daemon [_thread_blocked, id=5715]
+  0x9b004848 JavaThread "Thread-7" [_thread_blocked, id=5714]
+  0x0abbf0f8 JavaThread "Timer-0" daemon [_thread_blocked, id=5713]
+  0x9b680e28 JavaThread "DestroyJavaVM" [_thread_blocked, id=5680]
+  0x9b6b1b40 JavaThread "Image Fetcher 3" daemon [_thread_blocked, id=5709]
+  0x9c88fc98 JavaThread "TimerQueue" daemon [_thread_blocked, id=5708]
+  0x0a178eb0 JavaThread "AWT-EventQueue-1" [_thread_blocked, id=5707]
+  0x9b65f390 JavaThread "Thread-2" daemon [_thread_blocked, id=5706]
+  0x9c897878 JavaThread "Thread-1" [_thread_in_native, id=5705]
+  0x9d8d3d08 JavaThread "Image Fetcher 2" daemon [_thread_blocked, id=5703]
+  0x9d8fe9c8 JavaThread "AWT-Motif" daemon [_thread_in_native, id=5702]
+  0x9d8febe8 JavaThread "AWT-Shutdown" [_thread_blocked, id=5701]
+  0x9d849f58 JavaThread "Java2D Disposer" daemon [_thread_blocked, id=5700]
+  0x9d803960 JavaThread "Low Memory Detector" daemon [_thread_blocked, id=5698]
+  0x9d802540 JavaThread "CompilerThread1" daemon [_thread_blocked, id=5697]
+  0x9d801580 JavaThread "CompilerThread0" daemon [_thread_blocked, id=5696]
+  0x9d800580 JavaThread "AdapterThread" daemon [_thread_blocked, id=5695]
+  0x09dd18a0 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=5694]
+  0x09dc6200 JavaThread "Finalizer" daemon [_thread_blocked, id=5693]
+  0x09dc53b0 JavaThread "Reference Handler" daemon [_thread_blocked, id=5692]
+
+Other Threads:
+  0x09dc2760 VMThread [id=5691]
+  0x9d804f00 WatcherThread [id=5699]
+
+VM state:at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x09d10070/0x09d10098] Threads_lock - owner thread: 0x09dc2760
+[0x09d104c0/0x09d104d8] Heap_lock - owner thread: 0x9b004848
+
+Heap
+ PSYoungGen      total 17856K, used 16811K [0xb0080000, 0xb1660000, 0xb1cf0000)
+  eden space 16448K, 96% used [0xb0080000,0xb1002c28,0xb1090000)
+  from space 1408K, 65% used [0xb11e0000,0xb12c8000,0xb1340000)
+  to   space 1344K, 98% used [0xb1090000,0xb11dc530,0xb11e0000)
+ PSOldGen        total 3840K, used 2248K [0xa1cf0000, 0xa20b0000, 0xb0080000)
+  object space 3840K, 58% used [0xa1cf0000,0xa1f223f8,0xa20b0000)
+ PSPermGen       total 21760K, used 18094K [0x9dcf0000, 0x9f230000, 0xa1cf0000)
+  object space 21760K, 83% used [0x9dcf0000,0x9ee9bb70,0x9f230000)
+
+Dynamic libraries:
+08048000-08056000 r-xp 00000000 08:02 9549       /usr/local/jdk1.5.0/bin/java
+08056000-08058000 rwxp 0000e000 08:02 9549       /usr/local/jdk1.5.0/bin/java
+09d0d000-0ba4a000 rwxp 00000000 00:00 0          [heap]
+99700000-997ff000 rwxp 00000000 00:00 0 
+997ff000-99800000 ---p 00000000 00:00 0 
+9987f000-99882000 ---p 00000000 00:00 0 
+99882000-99900000 rwxp 00000000 00:00 0 
+99900000-999b2000 rwxp 00000000 00:00 0 
+999b2000-99a00000 ---p 00000000 00:00 0 
+99a00000-99af9000 rwxp 00000000 00:00 0 
+99af9000-99b00000 ---p 00000000 00:00 0 
+99b7f000-99b82000 ---p 00000000 00:00 0 
+99b82000-99c00000 rwxp 00000000 00:00 0 
+99c00000-99cfb000 rwxp 00000000 00:00 0 
+99cfb000-99d00000 ---p 00000000 00:00 0 
+99d00000-99e00000 rwxp 00000000 00:00 0 
+99e00000-99fd3000 rwxp 00000000 00:00 0 
+99fd3000-9a000000 ---p 00000000 00:00 0 
+9a000000-9a0ee000 rwxp 00000000 00:00 0 
+9a0ee000-9a100000 ---p 00000000 00:00 0 
+9a100000-9a200000 rwxp 00000000 00:00 0 
+9a27f000-9a282000 ---p 00000000 00:00 0 
+9a282000-9a300000 rwxp 00000000 00:00 0 
+9a300000-9a500000 rwxp 00000000 00:00 0 
+9a500000-9a700000 rwxp 00000000 00:00 0 
+9a700000-9a900000 rwxp 00000000 00:00 0 
+9a900000-9ab00000 rwxp 00000000 00:00 0 
+9ab00000-9ac00000 rwxp 00000000 00:00 0 
+9ac00000-9acd8000 rwxp 00000000 00:00 0 
+9acd8000-9ad00000 ---p 00000000 00:00 0 
+9ad7f000-9ad82000 ---p 00000000 00:00 0 
+9ad82000-9ae00000 rwxp 00000000 00:00 0 
+9ae00000-9aefd000 rwxp 00000000 00:00 0 
+9aefd000-9af00000 ---p 00000000 00:00 0 
+9af7f000-9af82000 ---p 00000000 00:00 0 
+9af82000-9b000000 rwxp 00000000 00:00 0 
+9b000000-9b100000 rwxp 00000000 00:00 0 
+9b100000-9b1eb000 rwxp 00000000 00:00 0 
+9b1eb000-9b200000 ---p 00000000 00:00 0 
+9b27f000-9b282000 ---p 00000000 00:00 0 
+9b282000-9b300000 rwxp 00000000 00:00 0 
+9b300000-9b3e8000 rwxp 00000000 00:00 0 
+9b3e8000-9b400000 ---p 00000000 00:00 0 
+9b44d000-9b573000 r-xs 00000000 08:03 13759      /home/cancersbad4u/.JAS3/extensions/xercesImpl.jar
+9b573000-9b600000 r-xs 00000000 08:02 262298     /usr/local/jas3-0.8.3/extensions/pnuts.jar
+9b600000-9b6ff000 rwxp 00000000 00:00 0 
+9b6ff000-9b700000 ---p 00000000 00:00 0 
+9b71b000-9b72b000 r-xp 00000000 08:02 1483       /lib/tls/i686/cmov/libresolv-2.10.1.so
+9b72b000-9b72c000 r-xp 00010000 08:02 1483       /lib/tls/i686/cmov/libresolv-2.10.1.so
+9b72c000-9b72d000 rwxp 00011000 08:02 1483       /lib/tls/i686/cmov/libresolv-2.10.1.so
+9b72d000-9b72f000 rwxp 00000000 00:00 0 
+9b72f000-9b734000 r-xp 00000000 08:02 1470       /lib/tls/i686/cmov/libnss_dns-2.10.1.so
+9b734000-9b735000 r-xp 00004000 08:02 1470       /lib/tls/i686/cmov/libnss_dns-2.10.1.so
+9b735000-9b736000 rwxp 00005000 08:02 1470       /lib/tls/i686/cmov/libnss_dns-2.10.1.so
+9b736000-9b738000 r-xp 00000000 08:02 792        /lib/libnss_mdns4_minimal.so.2
+9b738000-9b739000 r-xp 00001000 08:02 792        /lib/libnss_mdns4_minimal.so.2
+9b739000-9b73a000 rwxp 00002000 08:02 792        /lib/libnss_mdns4_minimal.so.2
+9b747000-9b74b000 rwxs 00000000 00:09 8749078    /SYSV00000000 (deleted)
+9b74b000-9b7e7000 r-xs 00000000 08:02 262297     /usr/local/jas3-0.8.3/extensions/pnuts-modules.jar
+9b7e7000-9b7f3000 r-xs 00000000 08:02 262296     /usr/local/jas3-0.8.3/extensions/optimizers.jar
+9b7f3000-9bac7000 r-xs 00000000 08:03 511        /home/cancersbad4u/.JAS3/extensions/lcsim.jar
+9bac7000-9bd7d000 r-xs 00000000 08:03 13771      /home/cancersbad4u/.JAS3/extensions/lcsim-contrib.jar
+9bd7d000-9bd87000 r-xs 00000000 08:03 504        /home/cancersbad4u/.JAS3/extensions/kxml2.jar
+9bd87000-9be37000 r-xs 00000000 08:02 262295     /usr/local/jas3-0.8.3/extensions/jython.jar
+9be37000-9be94000 r-xs 00000000 08:02 262294     /usr/local/jas3-0.8.3/extensions/jxl.jar
+9be94000-9beef000 r-xs 00000000 08:02 262292     /usr/local/jas3-0.8.3/extensions/jc.jar
+9beef000-9bf00000 r-xs 00000000 08:03 506        /home/cancersbad4u/.JAS3/extensions/freehep-physics.jar
+9bf00000-9c000000 rwxp 00000000 00:00 0 
+9c000000-9c009000 r-xs 00000000 08:02 262293     /usr/local/jas3-0.8.3/extensions/jel.jar
+9c009000-9c011000 r-xs 00000000 08:03 500        /home/cancersbad4u/.JAS3/extensions/freehep-jheprep1-adapter.jar
+9c011000-9c03f000 r-xs 00000000 08:03 448        /home/cancersbad4u/.JAS3/extensions/freehep-jheprep.jar
+9c03f000-9c050000 r-xs 00000000 08:03 507        /home/cancersbad4u/.JAS3/extensions/freehep-heprep1.jar
+9c050000-9c073000 r-xs 00000000 08:03 499        /home/cancersbad4u/.JAS3/extensions/freehep-heprep.jar
+9c073000-9c15d000 r-xs 00000000 08:02 262291     /usr/local/jas3-0.8.3/extensions/freehep-hep.jar
+9c15d000-9c18c000 r-xs 00000000 08:02 262290     /usr/local/jas3-0.8.3/extensions/freehep-graphicsio.jar
+9c18c000-9c1b9000 r-xs 00000000 08:02 262289     /usr/local/jas3-0.8.3/extensions/freehep-graphicsio-swf.jar
+9c1b9000-9c1bf000 r-xs 00000000 08:02 262288     /usr/local/jas3-0.8.3/extensions/freehep-graphicsio-svg.jar
+9c1bf000-9c1cb000 r-xs 00000000 08:02 262287     /usr/local/jas3-0.8.3/extensions/freehep-graphicsio-ps.jar
+9c1cb000-9c1de000 r-xs 00000000 08:02 262286     /usr/local/jas3-0.8.3/extensions/freehep-graphicsio-pdf.jar
+9c1de000-9c200000 r-xs 00000000 08:02 262285     /usr/local/jas3-0.8.3/extensions/freehep-graphicsio-emf.jar
+9c200000-9c300000 rwxp 00000000 00:00 0 
+9c302000-9c313000 r-xs 00000000 08:02 262272     /usr/local/jas3-0.8.3/extensions/CompilerPlugin.jar
+9c317000-9c31a000 r-xs 00000000 08:03 509        /home/cancersbad4u/.JAS3/extensions/sio.jar
+9c31a000-9c328000 r-xs 00000000 08:03 503        /home/cancersbad4u/.JAS3/extensions/freehep-jheprep1.jar
+9c328000-9c353000 r-xs 00000000 08:03 505        /home/cancersbad4u/.JAS3/extensions/commons-math.jar
+9c353000-9c39e000 r-xs 00000000 08:03 501        /home/cancersbad4u/.JAS3/extensions/WiredPlugin.jar
+9c39e000-9c3e3000 r-xs 00000000 08:03 497        /home/cancersbad4u/.JAS3/extensions/WiredBase.jar
+9c3e3000-9c400000 r-xs 00000000 08:02 262271     /usr/local/jas3-0.8.3/extensions/AidaPlugin.jar
+9c400000-9c4fe000 rwxp 00000000 00:00 0 
+9c4fe000-9c500000 ---p 00000000 00:00 0 
+9c500000-9c51e000 r-xs 00000000 08:02 262284     /usr/local/jas3-0.8.3/extensions/freehep-graphics2d.jar
+9c51e000-9c55d000 r-xs 00000000 08:02 262281     /usr/local/jas3-0.8.3/extensions/TupleExplorer.jar
+9c55d000-9c5fc000 r-xs 00000000 08:03 502        /home/cancersbad4u/.JAS3/extensions/GeomConverter.jar
+9c5fc000-9c5ff000 ---p 00000000 00:00 0 
+9c5ff000-9c67d000 rwxp 00000000 00:00 0 
+9c67d000-9c680000 ---p 00000000 00:00 0 
+9c680000-9c6fe000 rwxp 00000000 00:00 0 
+9c6fe000-9c701000 ---p 00000000 00:00 0 
+9c701000-9c77f000 rwxp 00000000 00:00 0 
+9c77f000-9c782000 ---p 00000000 00:00 0 
+9c782000-9c800000 rwxp 00000000 00:00 0 
+9c800000-9c8f2000 rwxp 00000000 00:00 0 
+9c8f2000-9c900000 ---p 00000000 00:00 0 
+9c900000-9c90a000 r-xs 00000000 08:02 262283     /usr/local/jas3-0.8.3/extensions/aida.jar
+9c90a000-9c923000 r-xs 00000000 08:02 262280     /usr/local/jas3-0.8.3/extensions/Spreadsheet.jar
+9c923000-9c92b000 r-xs 00000000 08:02 262279     /usr/local/jas3-0.8.3/extensions/SimpleEditor.jar
+9c92b000-9c934000 r-xs 00000000 08:02 262278     /usr/local/jas3-0.8.3/extensions/RecordLoop.jar
+9c934000-9c93a000 r-xs 00000000 08:02 262277     /usr/local/jas3-0.8.3/extensions/PnutsPlugin.jar
+9c93a000-9c93c000 r-xs 00000000 08:02 262276     /usr/local/jas3-0.8.3/extensions/PawPlugin.jar
+9c93c000-9c943000 r-xs 00000000 08:02 262275     /usr/local/jas3-0.8.3/extensions/JythonPlugin.jar
+9c943000-9c962000 r-xs 00000000 08:02 262274     /usr/local/jas3-0.8.3/extensions/JMinuit.jar
+9c962000-9c976000 r-xp 00000000 08:02 11893      /usr/local/jdk1.5.0/jre/lib/i386/libnet.so
+9c976000-9c977000 rwxp 00013000 08:02 11893      /usr/local/jdk1.5.0/jre/lib/i386/libnet.so
+9c977000-9c97a000 ---p 00000000 00:00 0 
+9c97a000-9c9f8000 rwxp 00000000 00:00 0 
+9c9f8000-9ca00000 r-xp 00000000 08:02 4058       /usr/lib/libXrender.so.1.3.0
+9ca00000-9ca01000 r-xp 00007000 08:02 4058       /usr/lib/libXrender.so.1.3.0
+9ca01000-9ca02000 rwxp 00008000 08:02 4058       /usr/lib/libXrender.so.1.3.0
+9ca02000-9ca0b000 r-xp 00000000 08:02 4030       /usr/lib/libXcursor.so.1.0.2
+9ca0b000-9ca0c000 r-xp 00008000 08:02 4030       /usr/lib/libXcursor.so.1.0.2
+9ca0c000-9ca0d000 rwxp 00009000 08:02 4030       /usr/lib/libXcursor.so.1.0.2
+9ca0e000-9ca11000 r-xs 00000000 08:03 13768      /home/cancersbad4u/.JAS3/extensions/freehep-sio.jar
+9ca11000-9ca17000 r-xs 00000000 08:03 508        /home/cancersbad4u/.JAS3/extensions/HepRep.jar
+9ca17000-9ca1d000 r-xp 00000000 08:02 11916      /usr/local/jdk1.5.0/jre/lib/i386/libnio.so
+9ca1d000-9ca1e000 rwxp 00005000 08:02 11916      /usr/local/jdk1.5.0/jre/lib/i386/libnio.so
+9ca1e000-9ca21000 ---p 00000000 00:00 0 
+9ca21000-9ca9f000 rwxp 00000000 00:00 0 
+9ca9f000-9cb12000 r-xp 00000000 08:02 11894      /usr/local/jdk1.5.0/jre/lib/i386/libfontmanager.so
+9cb12000-9cb1c000 rwxp 00073000 08:02 11894      /usr/local/jdk1.5.0/jre/lib/i386/libfontmanager.so
+9cb1c000-9cb20000 rwxp 00000000 00:00 0 
+9cb20000-9cb2e000 r-xs 00000000 08:02 262299     /usr/local/jas3-0.8.3/lib/BrowserLauncher2.jar
+9cb2e000-9cb4a000 r-xs 00000000 08:02 262304     /usr/local/jas3-0.8.3/lib/jlfgr.jar
+9cb4a000-9cb66000 r-xp 00000000 08:02 5055       /usr/lib/libxcb.so.1.1.0
+9cb66000-9cb67000 r-xp 0001c000 08:02 5055       /usr/lib/libxcb.so.1.1.0
+9cb67000-9cb68000 rwxp 0001d000 08:02 5055       /usr/lib/libxcb.so.1.1.0
+9cb68000-9cc92000 r-xp 00000000 08:02 4017       /usr/lib/libX11.so.6.2.0
+9cc92000-9cc93000 ---p 0012a000 08:02 4017       /usr/lib/libX11.so.6.2.0
+9cc93000-9cc94000 r-xp 0012a000 08:02 4017       /usr/lib/libX11.so.6.2.0
+9cc94000-9cc96000 rwxp 0012b000 08:02 4017       /usr/lib/libX11.so.6.2.0
+9cc96000-9cc97000 rwxp 00000000 00:00 0 
+9cc97000-9cca5000 r-xp 00000000 08:02 4036       /usr/lib/libXext.so.6.4.0
+9cca5000-9cca6000 r-xp 0000d000 08:02 4036       /usr/lib/libXext.so.6.4.0
+9cca6000-9cca7000 rwxp 0000e000 08:02 4036       /usr/lib/libXext.so.6.4.0
+9cca7000-9ccae000 r-xp 00000000 08:02 4052       /usr/lib/libXp.so.6.2.0
+9ccae000-9ccaf000 r-xp 00006000 08:02 4052       /usr/lib/libXp.so.6.2.0
+9ccaf000-9ccb0000 rwxp 00007000 08:02 4052       /usr/lib/libXp.so.6.2.0
+9ccb1000-9ccc1000 r-xs 00000000 08:02 262305     /usr/local/jas3-0.8.3/lib/openide-lookup.jar
+9ccc1000-9cf42000 r-xp 00000000 08:02 11904      /usr/local/jdk1.5.0/jre/lib/i386/motif21/libmawt.so
+9cf42000-9cf55000 rwxp 00281000 08:02 11904      /usr/local/jdk1.5.0/jre/lib/i386/motif21/libmawt.so
+9cf55000-9cf59000 rwxp 00000000 00:00 0 
+9cf59000-9d01f000 r-xp 00000000 08:02 11902      /usr/local/jdk1.5.0/jre/lib/i386/libmlib_image.so
+9d01f000-9d020000 rwxp 000c5000 08:02 11902      /usr/local/jdk1.5.0/jre/lib/i386/libmlib_image.so
+9d020000-9d094000 r-xp 00000000 08:02 11914      /usr/local/jdk1.5.0/jre/lib/i386/libawt.so
+9d094000-9d09a000 rwxp 00074000 08:02 11914      /usr/local/jdk1.5.0/jre/lib/i386/libawt.so
+9d09a000-9d0be000 rwxp 00000000 00:00 0 
+9d0be000-9d0e4000 r-xs 00000000 08:02 262303     /usr/local/jas3-0.8.3/lib/jdom.jar
+9d0e4000-9d1b2000 r-xs 00000000 08:02 262300     /usr/local/jas3-0.8.3/lib/freehep-base.jar
+9d1b2000-9d263000 r-xs 00000000 08:02 262301     /usr/local/jas3-0.8.3/lib/jas-plotter.jar
+9d263000-9d2c8000 r-xs 00000000 08:02 262302     /usr/local/jas3-0.8.3/lib/jas3.jar
+9d2c8000-9d2ee000 r-xs 00000000 08:02 11954      /usr/local/jdk1.5.0/jre/lib/ext/sunjce_provider.jar
+9d2ee000-9d3b2000 r-xs 00000000 08:02 11953      /usr/local/jdk1.5.0/jre/lib/ext/localedata.jar
+9d3b2000-9d3b3000 ---p 00000000 00:00 0 
+9d3b3000-9d433000 rwxp 00000000 00:00 0 
+9d433000-9d436000 ---p 00000000 00:00 0 
+9d436000-9d4b4000 rwxp 00000000 00:00 0 
+9d4b4000-9d4b7000 ---p 00000000 00:00 0 
+9d4b7000-9d535000 rwxp 00000000 00:00 0 
+9d535000-9d538000 ---p 00000000 00:00 0 
+9d538000-9d5b6000 rwxp 00000000 00:00 0 
+9d5b6000-9d5b9000 ---p 00000000 00:00 0 
+9d5b9000-9d637000 rwxp 00000000 00:00 0 
+9d637000-9d63a000 ---p 00000000 00:00 0 
+9d63a000-9d6b8000 rwxp 00000000 00:00 0 
+9d6b8000-9d6bf000 r-xs 00000000 08:02 134856     /usr/lib/gconv/gconv-modules.cache
+9d6bf000-9d6fe000 r-xp 00000000 08:02 264598     /usr/lib/locale/en_CA.utf8/LC_CTYPE
+9d6fe000-9d701000 ---p 00000000 00:00 0 
+9d701000-9d77f000 rwxp 00000000 00:00 0 
+9d77f000-9d782000 ---p 00000000 00:00 0 
+9d782000-9d800000 rwxp 00000000 00:00 0 
+9d800000-9d8ff000 rwxp 00000000 00:00 0 
+9d8ff000-9d900000 ---p 00000000 00:00 0 
+9d902000-9d906000 r-xp 00000000 08:02 4038       /usr/lib/libXfixes.so.3.1.0
+9d906000-9d907000 r-xp 00003000 08:02 4038       /usr/lib/libXfixes.so.3.1.0
+9d907000-9d908000 rwxp 00004000 08:02 4038       /usr/lib/libXfixes.so.3.1.0
+9d908000-9d90c000 r-xp 00000000 08:02 4034       /usr/lib/libXdmcp.so.6.0.0
+9d90c000-9d90d000 rwxp 00003000 08:02 4034       /usr/lib/libXdmcp.so.6.0.0
+9d90d000-9d938000 r-xs 00000000 08:02 11955      /usr/local/jdk1.5.0/jre/lib/ext/sunpkcs11.jar
+9d938000-9d939000 ---p 00000000 00:00 0 
+9d939000-9d9b9000 rwxp 00000000 00:00 0 
+9d9b9000-9d9ba000 ---p 00000000 00:00 0 
+9d9ba000-9da3a000 rwxp 00000000 00:00 0 
+9da3a000-9da3b000 ---p 00000000 00:00 0 
+9da3b000-9dabb000 rwxp 00000000 00:00 0 
+9dabb000-9dabc000 ---p 00000000 00:00 0 
+9dabc000-9db3c000 rwxp 00000000 00:00 0 
+9db3c000-9db3d000 ---p 00000000 00:00 0 
+9db3d000-9dbc8000 rwxp 00000000 00:00 0 
+9dbc8000-9dbdd000 rwxp 00000000 00:00 0 
+9dbdd000-9dbe1000 rwxp 00000000 00:00 0 
+9dbe1000-9dc4f000 rwxp 00000000 00:00 0 
+9dc4f000-9dc5a000 rwxp 00000000 00:00 0 
+9dc5a000-9dc6f000 rwxp 00000000 00:00 0 
+9dc6f000-9dc73000 rwxp 00000000 00:00 0 
+9dc73000-9dce0000 rwxp 00000000 00:00 0 
+9dce0000-9dcec000 rwxp 00000000 00:00 0 
+9dcec000-9dcef000 rwxp 00000000 00:00 0 
+9dcef000-9f230000 rwxp 00000000 00:00 0 
+9f230000-a1cf0000 rwxp 00000000 00:00 0 
+a1cf0000-a2390000 rwxp 00000000 00:00 0 
+a2390000-b0080000 rwxp 00000000 00:00 0 
+b0080000-b1660000 rwxp 00000000 00:00 0 
+b1660000-b1cf0000 rwxp 00000000 00:00 0 
+b1cf2000-b1cf4000 r-xs 00000000 08:02 262273     /usr/local/jas3-0.8.3/extensions/ExcelPlugin.jar
+b1cf4000-b1cf6000 r-xp 00000000 08:02 4023       /usr/lib/libXau.so.6.0.0
+b1cf6000-b1cf7000 r-xp 00001000 08:02 4023       /usr/lib/libXau.so.6.0.0
+b1cf7000-b1cf8000 rwxp 00002000 08:02 4023       /usr/lib/libXau.so.6.0.0
+b1cf8000-b1cff000 rwxp 00000000 00:00 0 
+b1cff000-b1d78000 rwxp 00000000 00:00 0 
+b1d78000-b1f20000 rwxp 00000000 00:00 0 
+b1f20000-b3d78000 rwxp 00000000 00:00 0 
+b3d78000-b45b3000 r-xs 00000000 08:02 11942      /usr/local/jdk1.5.0/jre/lib/charsets.jar
+b45b3000-b45c7000 r-xs 00000000 08:02 11956      /usr/local/jdk1.5.0/jre/lib/jce.jar
+b45c7000-b464d000 r-xs 00000000 08:02 11977      /usr/local/jdk1.5.0/jre/lib/jsse.jar
+b464d000-b46b5000 rwxp 00000000 00:00 0 
+b46b5000-b6c6c000 r-xs 00000000 08:02 12430      /usr/local/jdk1.5.0/jre/lib/rt.jar
+b6c6c000-b6c7f000 r-xp 00000000 08:02 11919      /usr/local/jdk1.5.0/jre/lib/i386/libzip.so
+b6c7f000-b6c81000 rwxp 00012000 08:02 11919      /usr/local/jdk1.5.0/jre/lib/i386/libzip.so
+b6c81000-b6ca2000 r-xp 00000000 08:02 11885      /usr/local/jdk1.5.0/jre/lib/i386/libjava.so
+b6ca2000-b6ca4000 rwxp 00020000 08:02 11885      /usr/local/jdk1.5.0/jre/lib/i386/libjava.so
+b6ca4000-b6caf000 r-xp 00000000 08:02 11899      /usr/local/jdk1.5.0/jre/lib/i386/libverify.so
+b6caf000-b6cb0000 rwxp 0000b000 08:02 11899      /usr/local/jdk1.5.0/jre/lib/i386/libverify.so
+b6cb0000-b6cba000 r-xp 00000000 08:02 1472       /lib/tls/i686/cmov/libnss_files-2.10.1.so
+b6cba000-b6cbb000 r-xp 00009000 08:02 1472       /lib/tls/i686/cmov/libnss_files-2.10.1.so
+b6cbb000-b6cbc000 rwxp 0000a000 08:02 1472       /lib/tls/i686/cmov/libnss_files-2.10.1.so
+b6cbc000-b6cc5000 r-xp 00000000 08:02 1476       /lib/tls/i686/cmov/libnss_nis-2.10.1.so
+b6cc5000-b6cc6000 r-xp 00008000 08:02 1476       /lib/tls/i686/cmov/libnss_nis-2.10.1.so
+b6cc6000-b6cc7000 rwxp 00009000 08:02 1476       /lib/tls/i686/cmov/libnss_nis-2.10.1.so
+b6cc7000-b6cda000 r-xp 00000000 08:02 1466       /lib/tls/i686/cmov/libnsl-2.10.1.so
+b6cda000-b6cdb000 r-xp 00012000 08:02 1466       /lib/tls/i686/cmov/libnsl-2.10.1.so
+b6cdb000-b6cdc000 rwxp 00013000 08:02 1466       /lib/tls/i686/cmov/libnsl-2.10.1.so
+b6cdc000-b6cde000 rwxp 00000000 00:00 0 
+b6cdf000-b6ce3000 r-xp 00000000 08:02 4064       /usr/lib/libXtst.so.6.1.0
+b6ce3000-b6ce4000 r-xp 00004000 08:02 4064       /usr/lib/libXtst.so.6.1.0
+b6ce4000-b6ce5000 rwxp 00005000 08:02 4064       /usr/lib/libXtst.so.6.1.0
+b6ce5000-b6ce7000 r-xs 00000000 08:02 11952      /usr/local/jdk1.5.0/jre/lib/ext/dnsns.jar
+b6ce7000-b6cef000 rwxs 00000000 08:02 901        /tmp/hsperfdata_cancersbad4u/5680
+b6cef000-b6d13000 r-xp 00000000 08:02 1463       /lib/tls/i686/cmov/libm-2.10.1.so
+b6d13000-b6d14000 r-xp 00023000 08:02 1463       /lib/tls/i686/cmov/libm-2.10.1.so
+b6d14000-b6d15000 rwxp 00024000 08:02 1463       /lib/tls/i686/cmov/libm-2.10.1.so
+b6d15000-b720a000 r-xp 00000000 08:02 11889      /usr/local/jdk1.5.0/jre/lib/i386/server/libjvm.so
+b720a000-b726b000 rwxp 004f5000 08:02 11889      /usr/local/jdk1.5.0/jre/lib/i386/server/libjvm.so
+b726b000-b7683000 rwxp 00000000 00:00 0 
+b7683000-b77c1000 r-xp 00000000 08:02 1455       /lib/tls/i686/cmov/libc-2.10.1.so
+b77c1000-b77c3000 r-xp 0013e000 08:02 1455       /lib/tls/i686/cmov/libc-2.10.1.so
+b77c3000-b77c4000 rwxp 00140000 08:02 1455       /lib/tls/i686/cmov/libc-2.10.1.so
+b77c4000-b77c8000 rwxp 00000000 00:00 0 
+b77c8000-b77ca000 r-xp 00000000 08:02 1461       /lib/tls/i686/cmov/libdl-2.10.1.so
+b77ca000-b77cb000 r-xp 00001000 08:02 1461       /lib/tls/i686/cmov/libdl-2.10.1.so
+b77cb000-b77cc000 rwxp 00002000 08:02 1461       /lib/tls/i686/cmov/libdl-2.10.1.so
+b77cc000-b77e1000 r-xp 00000000 08:02 1481       /lib/tls/i686/cmov/libpthread-2.10.1.so
+b77e1000-b77e2000 r-xp 00014000 08:02 1481       /lib/tls/i686/cmov/libpthread-2.10.1.so
+b77e2000-b77e3000 rwxp 00015000 08:02 1481       /lib/tls/i686/cmov/libpthread-2.10.1.so
+b77e3000-b77e5000 rwxp 00000000 00:00 0 
+b77e5000-b77e6000 r-xs 00000000 08:02 262282     /usr/local/jas3-0.8.3/extensions/aida-dev.jar
+b77e6000-b77ec000 r-xp 00000000 08:02 1468       /lib/tls/i686/cmov/libnss_compat-2.10.1.so
+b77ec000-b77ed000 r-xp 00005000 08:02 1468       /lib/tls/i686/cmov/libnss_compat-2.10.1.so
+b77ed000-b77ee000 rwxp 00006000 08:02 1468       /lib/tls/i686/cmov/libnss_compat-2.10.1.so
+b77ee000-b77f4000 r-xp 00000000 08:02 11898      /usr/local/jdk1.5.0/jre/lib/i386/native_threads/libhpi.so
+b77f4000-b77f5000 rwxp 00006000 08:02 11898      /usr/local/jdk1.5.0/jre/lib/i386/native_threads/libhpi.so
+b77f5000-b77f6000 ---p 00000000 00:00 0 
+b77f6000-b77f8000 rwxp 00000000 00:00 0 
+b77f8000-b77f9000 r-xp 00000000 00:00 0          [vdso]
+b77f9000-b7814000 r-xp 00000000 08:02 707        /lib/ld-2.10.1.so
+b7814000-b7815000 r-xp 0001a000 08:02 707        /lib/ld-2.10.1.so
+b7815000-b7816000 rwxp 0001b000 08:02 707        /lib/ld-2.10.1.so
+bfad7000-bfada000 ---p 00000000 00:00 0 
+bfada000-bfcd7000 rwxp 00000000 00:00 0          [stack]
+
+VM Arguments:
+jvm_args: -Xmx256m -Dapplication.home=/usr/local/jas3-0.8.3
+java_command: org.freehep.jas.JAS3
+
+Environment Variables:
+JAVA_HOME=/usr/local/jdk1.5.0
+CLASSPATH=/usr/local/jas3-0.8.3/patch:/usr/local/jas3-0.8.3/lib/jas3.jar:/usr/local/jas3-0.8.3/lib/jas-plotter.jar:/usr/local/jas3-0.8.3/lib/freehep-base.jar:/usr/local/jas3-0.8.3/lib/jdom.jar:/usr/local/jas3-0.8.3/lib/openide-lookup.jar:/usr/local/jas3-0.8.3/lib/jlfgr.jar:/usr/local/jas3-0.8.3/lib/BrowserLauncher2.jar
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/sbin:/usr/sbin:/usr/local/root/bin:/usr/local/root/bin:/usr/local/apache-maven-2.0.9/bin:/usr/local/jdk1.5.0/bin:/usr/local/root/bin:/usr/local/apache-maven-2.0.9/bin:/usr/local/jdk1.5.0/bin
+USERNAME=cancersbad4u
+LD_LIBRARY_PATH=/usr/local/jdk1.5.0/jre/lib/i386/server:/usr/local/jdk1.5.0/jre/lib/i386:/usr/local/jdk1.5.0/jre/../lib/i386:/usr/local/jas3-0.8.3/bin
+SHELL=/bin/bash
+DISPLAY=:0.0
+
+
+---------------  S Y S T E M  ---------------
+
+OS:squeeze/sid
+
+uname:Linux 2.6.31-17-generic-pae #54-Ubuntu SMP Thu Dec 10 17:23:29 UTC 2009 i686
+libc:glibc 2.10.1 NPTL 2.10.1 
+rlimit: STACK 8192k, CORE 0k, NPROC infinity, NOFILE 1024, AS infinity
+load average:0.36 0.09 0.03
+
+CPU:total 4 family 271, cmov, cx8, fxsr, mmx, sse, sse2, ht
+
+Memory: 4k page, physical 1006k(421k free), swap 576k(576k free)
+
+vm_info: Java HotSpot(TM) Server VM (1.5.0-b64) for linux-x86, built on Sep 15 2004 02:48:56 by java_re with gcc 3.2.1-7a (J2SE release)
+

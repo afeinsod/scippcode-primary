@@ -1,0 +1,157 @@
+/*
+ * GeometryTest.java
+ *
+ * Created on Mar 27, 2014, 10:05 PM
+ * @author Christopher Milke
+ *
+ */
+package org.lcsim.contrib.scipp.beamcal.test;
+
+import org.lcsim.contrib.scipp.beamcal.TileParameters;
+import org.lcsim.contrib.scipp.beamcal.geometry.PhiTileParameters;
+import org.lcsim.contrib.scipp.beamcal.geometry.ArcTileParameters;
+
+import org.lcsim.contrib.scipp.lctools.jroot.JROOTFactory;
+
+import org.lcsim.contrib.scipp.lctools.jroot.TH2.TH2D;
+
+import org.lcsim.event.EventHeader;
+import org.lcsim.event.MCParticle;
+import org.lcsim.event.SimCalorimeterHit;
+
+import org.lcsim.util.Driver;
+import org.lcsim.util.Driver.NextEventException;
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.Collections;
+
+import java.lang.String;
+
+public class GeometryTest extends Driver {
+    public GeometryTest() {} //null constructor
+
+    //DEFINE XML FUNCTIONS
+    //These functions are specially fomatted functions to pull variable data from the xml file
+    /*****************************************************************************************
+        XML FUNCTION FORMAT
+
+    public void setVariablename(variable type) { //the first letter after "set" must be uppercase
+                                                  //but can be lowercase in xml file
+        set variable here; 
+    }
+    *******************************************************************************************/
+
+    public void setJrootfile(String s) {
+        this.jrootFile = s;
+    }
+    
+    public void setParams(String parameter_string) { 
+        String[] parameters = parameter_string.split(",");
+        float[] p = new float[8];
+        System.out.println("creating params");
+        for (int i = 0; i < parameters.length; i++) {
+            p[i] = Float.parseFloat( parameters[i] );
+            System.out.println( p[i] );
+        }
+        
+        params = new ArcTileParameters(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7]);
+    }
+    
+    //END DEFINE XML FUNCTIONS
+
+
+    //This function is called when the program is first started
+    //and initializes all persistant data
+    public void startOfData() {
+        try {
+            this.factory.open(this.jrootFile); 
+
+            this.graph = this.factory.newTH2D("tilepic",
+                "Tile Picture", 3000, -150F, 150F, 3000, -150F, 150F);
+        }
+        catch (java.io.IOException e) {
+           System.out.println(e);
+           System.exit(1);
+        }
+    }
+
+
+    //This function is called after all file runs have finished,
+    // and closes any necessary data
+    public void endOfData(){
+        try {
+            this.factory.close();
+        }
+        catch (java.io.IOException e) {
+           System.out.println(e);
+           System.exit(1);
+        }
+    }
+
+    //PROCESS FUNCTION
+    //This is where the vast bulk of the program is run and controlled
+    public void process( EventHeader event ) {
+        short[] tileID = {0,0};
+        
+        try {
+                for( double x = -150; x < 150 ; x +=0.1 ) {
+                    for ( double y = -150 ; y < 150 ; y +=0.1 ) {
+                        System.out.println("x="+x+", y="+y);
+                        
+
+                        double[] coords = new double[2];
+                        coords[0] = x;
+                        coords[1] = y;
+
+                        short[] testID = params.getID(x,y);
+
+                        if (tileID[0] != testID[0] || tileID[1] != testID[1])
+                            graph.fill(x,y);
+                        
+                        tileID = testID;
+                    }
+                }
+
+                for( double y = -150; y < 150 ; y +=0.1 ) {
+                    for ( double x = -150 ; x < 150 ; x +=0.1 ) {
+                        System.out.println("x="+x+", y="+y);
+
+                        double[] coords = new double[2];
+                        coords[0] = x;
+                        coords[1] = y;
+
+                        short[] testID = params.getID(x,y);
+
+                        if (tileID[0] != testID[0] || tileID[1] != testID[1])
+                            graph.fill(x,y);
+
+                        tileID = testID;
+                    }
+                }
+
+ 
+        }catch (java.io.IOException e) {
+            System.out.println(e);
+            System.exit(1);
+        }
+
+    }//End Process
+    
+
+    /*here all the classwide variables are declared*/
+
+    //xml derived variables
+    private String jrootFile = "";
+
+    //variables for jroot file construction and background/signal file reading
+    private JROOTFactory factory = new JROOTFactory();
+    private TH2D graph;
+
+    //miscellenous variables
+    private TileParameters params;
+}

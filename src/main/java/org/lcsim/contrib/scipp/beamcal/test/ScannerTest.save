@@ -1,0 +1,442 @@
+/*
+ * ScannerTest.java
+ *
+ * Created on Mar 27, 2014, 10:05 PM
+ * @author Christopher Milke
+ *
+ */
+package org.lcsim.contrib.scipp.beamcal.test;
+
+import org.lcsim.contrib.scipp.beamcal.BeamCalorimeterTile;
+import org.lcsim.contrib.scipp.beamcal.base.BaseBeamCalorimeterTile;
+import org.lcsim.contrib.scipp.beamcal.BeamCalorimeterTiler;
+import org.lcsim.contrib.scipp.beamcal.base.BaseBeamCalorimeterTiler;
+import org.lcsim.contrib.scipp.beamcal.BeamCalorimeterPallet;
+import org.lcsim.contrib.scipp.beamcal.base.BaseBeamCalorimeterPallet;
+import org.lcsim.contrib.scipp.beamcal.BeamCalorimeterScanner;
+import org.lcsim.contrib.scipp.beamcal.base.BaseBeamCalorimeterScanner;
+
+import org.lcsim.contrib.scipp.beamcal.database.TileDataBaseReader;
+import org.lcsim.contrib.scipp.beamcal.database.DataBaseBeamCalorimeterTile;
+
+import org.lcsim.contrib.scipp.beamcal.TileParameters;
+import org.lcsim.contrib.scipp.beamcal.geometry.PhiTileParameters;
+import org.lcsim.contrib.scipp.beamcal.geometry.ArcTileParameters;
+
+import org.lcsim.contrib.scipp.lctools.jroot.JROOTFactory;
+import org.lcsim.contrib.scipp.beamcal.LCIOFileManager;
+
+import org.lcsim.contrib.scipp.lctools.jroot.TH2.TH2D;
+import org.lcsim.contrib.scipp.lctools.jroot.TH1.TH1D;
+
+import org.lcsim.event.EventHeader;
+import org.lcsim.event.MCParticle;
+import org.lcsim.event.SimCalorimeterHit;
+
+import org.lcsim.util.Driver;
+import org.lcsim.util.Driver.NextEventException;
+
+import java.util.Set;
+import java.util.Map;
+import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.Collections;
+
+import java.lang.String;
+
+public class ScannerTest extends Driver {
+    public ScannerTest() {} //null constructor
+
+    //DEFINE XML FUNCTIONS
+    //These functions are specially fomatted functions to pull variable data from the xml file
+    /*****************************************************************************************
+        XML FUNCTION FORMAT
+
+    public void setVariablename(variable type) { //the first letter after "set" must be uppercase
+                                                  //but can (must?) be lowercase in xml file
+        set variable here; 
+    }
+    *******************************************************************************************/
+
+    public void setSignalfile(String name) {
+        this.lcioFileMNGR.setFile(name);
+    }
+
+    public void setJrootfile(String s) {
+        this.jrootFile = s;
+    }
+    
+    
+    public void setDbtilefile(String s) { 
+        DBtileFile = s;
+    }
+    
+    
+    public void setPalletsize(int n) {
+        prad = n;
+    }
+    
+    
+    public void setParams(String parameter_string) { 
+        String[] parameters = parameter_string.split(",");
+        float[] p = new float[8];
+        System.out.println("creating params");
+        for (int i = 0; i < parameters.length; i++) {
+            p[i] = Float.parseFloat( parameters[i] );
+            System.out.println( p[i] );
+        }
+        
+        params = new ArcTileParameters(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7]);
+    }
+    //END DEFINE XML FUNCTIONS
+
+
+    //This function is called when the program is first started
+    //and initializes all persistant data
+    public void startOfData() {
+        tiler = new BaseBeamCalorimeterTiler(params);
+        scanner = new BaseBeamCalorimeterScanner(params,1,prad);
+        dbreader1 = new TileDataBaseReader(DBtileFile);
+        
+        
+        try {
+            this.factory.open(this.jrootFile); 
+
+            this.graph = this.factory.newTH2D("tilepic",
+                "Tile Picture", 3000, -150F, 150F, 3000, -150F, 150F);
+                
+            this.graph2 = this.factory.newTH2D("palpic",
+                "Pallet Picture", 3000, -150F, 150F, 3000, -150F, 150F);
+                
+            this.scatter1 = this.factory.newTH2D("posxy1",
+                "X Y Position", 3000, -150F, 150F, 3000, -150F, 150F);
+ 
+            this.hist1    = this.factory.newTH1D("posz1",
+                 "Z Position", 18000, 0F, 18000F);
+                 
+            this.scatter2 = this.factory.newTH2D("posxy2",
+                "X Y Position", 3000, -150F, 150F, 3000, -150F, 150F);
+ 
+            this.hist2    = this.factory.newTH1D("posz2",
+                 "Z Position", 18000, 0F, 18000F);
+        }
+        catch (java.io.IOException e) {
+           System.out.println(e);
+           System.exit(1);
+        }
+    }
+
+
+    //This function is called after all file runs have finished,
+    // and closes any necessary data
+    public void endOfData(){
+        try {
+            this.factory.close();
+        }
+        catch (java.io.IOException e) {
+           System.out.println(e);
+           System.exit(1);
+        }
+    }
+
+    //PROCESS FUNCTION
+    //This is where the vast bulk of the program is run and controlled
+    public void process( EventHeader event ) {
+        super.process( event );
+        
+        //Get electron signal event and ensure it actually hits the detector
+        EventHeader signalEvent = this.lcioFileMNGR.nextEvent();
+        System.out.println("retrieved signal event");
+
+        if (signalEvent == null)
+            throw new java.lang.RuntimeException("There are no signal events left. Process ending");
+
+        MCParticle electron = this.getElectron(signalEvent);
+
+        if (electron == null) {
+            throw new NextEventException();
+        }
+
+        while (! this.testElectron(electron)) {
+            signalEvent = this.lcioFileMNGR.nextEvent();
+            if (signalEvent == null)
+            throw new java.lang.RuntimeException("There are no signal events left. Process ending");
+
+            electron    = this.getElectron(signalEvent);
+            if (electron == null) {
+                throw new NextEventException();
+            }
+        }
+        
+        int layer = 9;
+
+        //process signal and background files to extract the locations of hits 
+        // and remove those hits that we don't care about
+        List<SimCalorimeterHit> signalhits = signalEvent.get(SimCalorimeterHit.class, "BeamCalHits");
+        List<SimCalorimeterHit> bghits     = event.get(SimCalorimeterHit.class, "BeamCalHits");
+        this.optimizeList(bghits);
+        this.optimizeList(signalhits);
+        
+        try {
+            
+            for (SimCalorimeterHit hit : signalhits) {
+                if ( hit.getLayerNumber() == layer ) {
+                    double[] vec = hit.getPosition();
+                    scatter1.fill(vec[0],vec[1]);
+                    hist1.fill(vec[2]);
+                }
+            }
+            
+            for (SimCalorimeterHit hit : bghits) {
+                if ( hit.getLayerNumber() == layer ) {
+                    double[] vec = hit.getPosition();
+                    scatter2.fill(vec[0],vec[1]);
+                    hist2.fill(vec[2]);
+                }
+            }
+            
+            
+            
+            
+            
+            //apply hits to the geometry of the detector. background hits are 
+            // processed specially so they are overlayed on signal hits
+            this.tiler.clear();
+            this.tiler.process(signalhits, layer);
+            List<SimCalorimeterHit> bgl9hits = new ArrayList();
+            for (SimCalorimeterHit h : bghits) {
+                if (h.getLayerNumber() == layer) {
+                    bgl9hits.add(h); 
+                }
+            }
+            this.tiler.processNoLayers(bgl9hits);
+            System.out.println("All hits processed");
+            
+            List<BeamCalorimeterTile> alltiles = tiler.getTiles();
+            
+            //look over all possible pallets and order them by energy
+            this.scanner.scanDB(this.tiler.getDataBaseTiles(dbreader1), layer);
+            System.out.println("Scanner has finished");
+            List<BeamCalorimeterPallet> seedPallets = new ArrayList();
+            seedPallets.addAll( this.scanner.getTopPalletsNoOverlap(5) );
+            System.out.println("Seed pallets have been obtained");
+            dbreader1.close();
+            
+            
+            
+            
+            Set<String> tileSet = new HashSet<String>();
+            for ( BeamCalorimeterTile t : alltiles ) {
+                tileSet.add( t.toString() );
+            }
+            
+            
+            
+            boolean pal_had0 = false;
+            boolean pal_had1 = false;
+            boolean pal_had2 = false;
+            boolean pal_had3 = false;
+            boolean pal_had4 = false;
+            short[] tileID = {0,0};
+            BeamCalorimeterPallet pal0 = seedPallets.get(0);
+            BeamCalorimeterPallet pal1 = seedPallets.get(1);
+            BeamCalorimeterPallet pal2 = seedPallets.get(2);
+            BeamCalorimeterPallet pal3 = seedPallets.get(3);
+            BeamCalorimeterPallet pal4 = seedPallets.get(4);
+            System.out.println( "Pallet 0 ID = " + pal0.toString() );
+            System.out.println( "Pallet 1 ID = " + pal1.toString() );
+            System.out.println( "Pallet 2 ID = " + pal2.toString() );
+            System.out.println( "Pallet 3 ID = " + pal3.toString() );
+            System.out.println( "Pallet 4 ID = " + pal4.toString() );
+            
+            for( double x = -150; x < 150 ; x +=0.5 ) {
+                for ( double y = -150 ; y < 150 ; y +=0.5 ) {
+
+                    double[] coords = new double[2];
+                    coords[0] = x;
+                    coords[1] = y;
+
+                    BaseBeamCalorimeterTile tester;
+                    tester = new BaseBeamCalorimeterTile(coords,params);
+                    short[] testID = tester.getTileID();
+                    
+                    //map out tiles
+                    if (tileID[0] != testID[0] || tileID[1] != testID[1]) {
+                        String tile1 = params.IDtoString(tileID[0],tileID[1]);
+                        String tile2 = params.IDtoString(testID[0],testID[1]);
+                        
+                        if ( tileSet.contains(tile1) || tileSet.contains(tile2) )
+                            graph.fill(x,y);
+                    }
+                    
+                    //map out pallets
+                    String IDstring = params.IDtoString(testID[0],testID[1]);
+                    
+                    boolean pal_has0 = pal0.getConstituentTiles().contains(IDstring);
+                    if ( pal_had0 != pal_has0 ) graph2.fill(x,y);
+                    pal_had0 = pal_has0;
+                    
+                    boolean pal_has1 = pal1.getConstituentTiles().contains(IDstring);
+                    if ( pal_had1 != pal_has1 ) graph2.fill(x,y);
+                    pal_had1 = pal_has1;
+                    
+                    boolean pal_has2 = pal2.getConstituentTiles().contains(IDstring);
+                    if ( pal_had2 != pal_has2 ) graph2.fill(x,y);
+                    pal_had2 = pal_has2;
+                    
+                    boolean pal_has3 = pal3.getConstituentTiles().contains(IDstring);
+                    if ( pal_had3 != pal_has3 ) graph2.fill(x,y);
+                    pal_had3 = pal_has3;
+                    
+                    boolean pal_has4 = pal4.getConstituentTiles().contains(IDstring);
+                    if ( pal_had4 != pal_has4 ) graph2.fill(x,y);
+                    pal_had4 = pal_has4;
+                    
+                    
+                    
+                    tileID = testID;
+                }
+            }
+
+            for( double y = -150; y < 150 ; y +=0.5 ) {
+                for ( double x = -150 ; x < 150 ; x +=0.5 ) {
+
+                    double[] coords = new double[2];
+                    coords[0] = x;
+                    coords[1] = y;
+
+                    BaseBeamCalorimeterTile tester;
+                    tester = new BaseBeamCalorimeterTile(coords,params);
+                    short[] testID = tester.getTileID();
+                    
+                    //map out tiles
+                    if (tileID[0] != testID[0] || tileID[1] != testID[1]) {
+                        String tile1 = params.IDtoString(tileID[0],tileID[1]);
+                        String tile2 = params.IDtoString(testID[0],testID[1]);
+                        
+                        if ( tileSet.contains(tile1) || tileSet.contains(tile2) )
+                            graph.fill(x,y);
+                    }
+                    
+                    //map out pallets
+                    String IDstring = params.IDtoString(testID[0],testID[1]);
+                    
+                    boolean pal_has0 = pal0.getConstituentTiles().contains(IDstring);
+                    if ( pal_had0 != pal_has0 ) graph2.fill(x,y);
+                    pal_had0 = pal_has0;
+                    
+                    boolean pal_has1 = pal1.getConstituentTiles().contains(IDstring);
+                    if ( pal_had1 != pal_has1 ) graph2.fill(x,y);
+                    pal_had1 = pal_has1;
+                    
+                    boolean pal_has2 = pal2.getConstituentTiles().contains(IDstring);
+                    if ( pal_had2 != pal_has2 ) graph2.fill(x,y);
+                    pal_had2 = pal_has2;
+                    
+                    boolean pal_has3 = pal3.getConstituentTiles().contains(IDstring);
+                    if ( pal_had3 != pal_has3 ) graph2.fill(x,y);
+                    pal_had3 = pal_has3;
+                    
+                    boolean pal_has4 = pal4.getConstituentTiles().contains(IDstring);
+                    if ( pal_had4 != pal_has4 ) graph2.fill(x,y);
+                    pal_had4 = pal_has4;
+                    
+                    
+                    
+                    tileID = testID;
+                }
+            }
+
+ 
+        }catch (java.io.IOException e) {
+            System.out.println(e);
+            System.exit(1);
+        }catch (java.sql.SQLException e) {
+            System.out.println(e);
+            System.exit(1);
+        }
+
+    }//End Process
+    
+    
+    
+    //extracts electron data from signal file
+    private MCParticle getElectron(EventHeader event) {
+        MCParticle mcp = null;
+        for (MCParticle p : event.getMCParticles()) {
+            if (Math.abs(p.getPDGID()) == 11 && p.getGeneratorStatus() == MCParticle.FINAL_STATE) {
+                mcp = p;
+                break;
+            }
+        }
+        return mcp;
+    }
+    
+    
+    //ensures the electron hits the detector 
+    //(can be used to limit studies to one part of the detector)
+    private boolean testElectron(MCParticle electron) {
+        double[] vec = electron.getEndPoint().v();
+        double   rorg = Math.hypot(vec[0], vec[1]);
+
+        //Reject electrons that do not decay at the front of the beamcal
+        boolean results = true;
+        if (rorg >= 90 || vec[2] < 2500 || vec[2] > 3500) {
+            results = false;
+        }
+
+        //Reject electrons going down the beam pipe
+        if ( (vec[0] <= 34 && vec[0] >= 4) && (vec[1] <= 15 && vec[1] >= -15) ) {
+            results = false;
+        }
+        if ( (vec[0] >= -30 && vec[0] <= -15) && (vec[1] <= 10 && vec[1] >= -10) ) {
+            results = false;
+        }
+        return results;
+    }
+    
+    
+    //removes more unneeded hits from a hit list.
+    //YES, this and the above function are both necessary.
+    private void optimizeList(List<SimCalorimeterHit> hitList) {
+        ListIterator iter = hitList.listIterator(); 
+        SimCalorimeterHit hit = null;
+        while (iter.hasNext()) {
+            hit = (SimCalorimeterHit) iter.next();
+            if ( hit.getLayerNumber() < 9 
+              || hit.getLayerNumber() > 40
+              || Math.hypot(hit.getPosition()[0], hit.getPosition()[1]) > 90) {
+               iter.remove();
+            }
+        }
+    }
+    
+    
+
+    /*here all the classwide variables are declared*/
+
+    //xml derived variables
+    private String jrootFile = "";
+
+    //variables for jroot file construction and background/signal file reading
+    private LCIOFileManager lcioFileMNGR = new LCIOFileManager();
+    private JROOTFactory factory = new JROOTFactory();
+    private TH2D graph;
+    private TH2D graph2;
+    private TH2D scatter1;
+    private TH1D hist1;
+    private TH2D scatter2;
+    private TH1D hist2;
+
+    //miscellenous variables
+    private String DBtileFile;
+    private TileDataBaseReader dbreader1;
+    private TileParameters params;
+    private BaseBeamCalorimeterTiler tiler;
+    private BaseBeamCalorimeterScanner scanner;
+    private int prad;
+}

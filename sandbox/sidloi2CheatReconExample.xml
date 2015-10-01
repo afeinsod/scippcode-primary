@@ -1,0 +1,67 @@
+<lcsim>
+    <inputFiles>
+        <file>/work/ttbarTest.slcio</file>
+    </inputFiles>
+    <control>
+        <numberOfEvents>10</numberOfEvents>
+    </control>
+    <classpath>
+        <jar>/Users/jeremymccormick/.m2/repository/org/lcsim/lcsim-contrib/1.2-SNAPSHOT/lcsim-contrib-1.2-SNAPSHOT.jar</jar>
+    </classpath>
+    <execute>
+        <driver name="EventMarkerDriver"/>
+        <!--<driver name="FinalStateMCParticleDriver"/>-->
+        <driver name="CreateFinalStateMCParticleList"/>
+        <driver name="CheatTrackDriver"/>
+        <driver name="CalorimeterHitCollectionDriver"/>
+        <driver name="PerfectClusteringDriver"/>
+        <driver name="PerfectIdentifier"/>
+        <driver name="SimpleAnalysis"/>
+        <driver name="LCIODriver"/>
+    </execute>
+    <drivers>
+        <driver name="EventMarkerDriver"
+                type="org.lcsim.job.EventMarkerDriver">
+            <eventInterval>1</eventInterval>
+        </driver>
+<!--
+        <driver name="FinalStateMCParticleDriver"
+                type="org.lcsim.contrib.jeremym.pfa.cheat.FinalStateMCParticleDriver">
+        </driver>
+-->
+        <driver name="CreateFinalStateMCParticleList"
+                type="org.lcsim.contrib.jeremym.pfa.cheat.CreateFinalStateMCParticleList">
+            <collectionName>FinalStateMCParticle</collectionName>
+        </driver>
+        <driver name="CheatTrackDriver"
+                type="org.lcsim.recon.tracking.cheat.CheatTrackDriver">
+            <outputName>CheatTracks</outputName>
+            <outputPName>CheatParticles</outputPName>
+        </driver>
+        <driver name="CalorimeterHitCollectionDriver"
+                type="org.lcsim.contrib.jeremym.pfa.cheat.CalorimeterHitCollectionDriver">
+        </driver>
+        <driver name="PerfectClusteringDriver"
+                type="org.lcsim.contrib.jeremym.pfa.cheat.PerfectClusteringDriver">
+            <clusterOutputCollection>CheatClusters</clusterOutputCollection>
+        </driver>
+        <driver name="PerfectIdentifier"
+                type="org.lcsim.recon.pfa.cheat.PerfectIdentifier">
+            <inputClusterList>CheatClusters</inputClusterList>
+            <outputParticleList>CheatReconParticles</outputParticleList>
+            <mCParticleList>MCParticle</mCParticleList>
+            <inputTrackList>CheatTracks</inputTrackList>
+            <outputTrackList>CheatReconTracks</outputTrackList>
+            <requireTrack>false</requireTrack>
+        </driver>
+        <driver name="SimpleAnalysis"
+                type="org.lcsim.contrib.jeremym.pfa.cheat.SimpleAnalysis">
+            <fileName>ttbarTest_plots.aida</fileName>
+            <particleCollection>CheatReconParticles</particleCollection>
+        </driver>
+        <driver name="LCIODriver"
+                type="org.lcsim.util.loop.LCIODriver">
+            <outputFilePath>./ttbarTest_recon.slcio</outputFilePath>
+        </driver>
+    </drivers>
+</lcsim>

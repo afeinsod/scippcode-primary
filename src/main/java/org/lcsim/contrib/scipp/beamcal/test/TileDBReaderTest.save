@@ -1,0 +1,121 @@
+/*
+ * TileDBReaderTest.java
+ *
+ * Created on Mar 27, 2014, 10:05 PM
+ * @author Christopher Milke
+ *
+ */
+package org.lcsim.contrib.scipp.beamcal.test;
+
+import org.lcsim.contrib.scipp.beamcal.BeamCalorimeterTile;
+import org.lcsim.contrib.scipp.beamcal.base.BaseBeamCalorimeterTile;
+import org.lcsim.contrib.scipp.beamcal.BeamCalorimeterTiler;
+import org.lcsim.contrib.scipp.beamcal.base.BaseBeamCalorimeterTiler;
+import org.lcsim.contrib.scipp.beamcal.database.TileDataBaseReader;
+import org.lcsim.contrib.scipp.beamcal.database.DataBaseBeamCalorimeterTile;
+
+import org.lcsim.contrib.scipp.beamcal.TileParameters;
+import org.lcsim.contrib.scipp.beamcal.geometry.PhiTileParameters;
+import org.lcsim.contrib.scipp.beamcal.geometry.ArcTileParameters;
+
+import org.lcsim.contrib.scipp.lctools.jroot.JROOTFactory;
+
+import org.lcsim.contrib.scipp.lctools.jroot.TH2.TH2D;
+import org.lcsim.contrib.scipp.lctools.jroot.TH1.TH1D;
+
+import org.lcsim.event.EventHeader;
+import org.lcsim.event.MCParticle;
+import org.lcsim.event.SimCalorimeterHit;
+
+import org.lcsim.util.Driver;
+import org.lcsim.util.Driver.NextEventException;
+
+import java.util.Set;
+import java.util.Map;
+import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.Collections;
+
+import java.lang.String;
+
+public class TileDBReaderTest extends Driver {
+    public TileDBReaderTest() {} //null constructor
+
+    //DEFINE XML FUNCTIONS
+    //These functions are specially fomatted functions to pull variable data from the xml file
+    /*****************************************************************************************
+        XML FUNCTION FORMAT
+
+    public void setVariablename(variable type) { //the first letter after "set" must be uppercase
+                                                  //but can (must?) be lowercase in xml file
+        set variable here; 
+    }
+    *******************************************************************************************/
+    
+    public void setDbfile(String s) { 
+        connectionName = s;
+    }
+    
+    public void setParams(String parameter_string) { 
+        String[] parameters = parameter_string.split(",");
+        float[] p = new float[8];
+        System.out.println("creating params");
+        for (int i = 0; i < parameters.length; i++) {
+            p[i] = Float.parseFloat( parameters[i] );
+            System.out.println( p[i] );
+        }
+        
+        params = new ArcTileParameters(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7]);
+    }
+    //END DEFINE XML FUNCTIONS
+
+
+    //This function is called when the program is first started
+    //and initializes all persistant data
+    public void startOfData() {
+        tiler = new BaseBeamCalorimeterTiler(params);
+        dbreader1 = new TileDataBaseReader(connectionName);
+    }
+
+
+    //This function is called after all file runs have finished,
+    // and closes any necessary data
+    public void endOfData(){}
+
+    //PROCESS FUNCTION
+    //This is where the vast bulk of the program is run and controlled
+    public void process( EventHeader event ) {
+        super.process( event );
+        
+        List<SimCalorimeterHit> bghits = event.get(SimCalorimeterHit.class, "BeamCalHits");
+        
+        try{
+            tiler.process(bghits,9);
+            List<DataBaseBeamCalorimeterTile> dbtiles = tiler.getDataBaseTiles(dbreader1);
+            for ( DataBaseBeamCalorimeterTile dbt : dbtiles ) {
+                System.out.println( "tile ID = " + dbt.toString() + ",   energy =" + dbt.getEnergy() + ",   Sub energy = " + dbt.getSubtractedEnergy() );
+            }
+        }catch (java.sql.SQLException e) {
+            System.out.println(e);
+            System.exit(1);
+        }
+
+    }//End Process
+    
+
+    /*here all the classwide variables are declared*/
+
+    //xml derived variables
+
+    //variables for jroot file construction and background/signal file reading
+
+    //miscellenous variables
+    private TileParameters params;
+    private String connectionName;
+    private TileDataBaseReader dbreader1;
+    private BaseBeamCalorimeterTiler tiler;
+}
