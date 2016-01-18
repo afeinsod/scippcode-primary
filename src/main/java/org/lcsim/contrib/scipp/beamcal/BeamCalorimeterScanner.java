@@ -10,6 +10,8 @@
  * The scanner provides the user with an immutable list of BeamCalorimeterPallets 
  * (accessed via an Iterator), which provide information about their location, energy,
  * layer, and weight. The segmentation will vary with implementation, via the pallets.  
+ *
+ * LOLOLOLOLOL THIS IS ALL GOING TO BE WIPED BY AFEINSOD
  */
 
 package org.lcsim.contrib.scipp.beamcal;
