@@ -7,12 +7,10 @@
  */
 package org.lcsim.contrib.scipp.beamcal.test;
 
-import org.lcsim.contrib.scipp.beamcal.BeamCalorimeterTile;
-import org.lcsim.contrib.scipp.beamcal.base.BaseBeamCalorimeterTile;
+
 import org.lcsim.contrib.scipp.beamcal.BeamCalorimeterTiler;
 import org.lcsim.contrib.scipp.beamcal.base.BaseBeamCalorimeterTiler;
 
-import org.lcsim.contrib.scipp.beamcal.database.DataBaseBeamCalorimeterTile;
 import org.lcsim.contrib.scipp.beamcal.database.TileDataBaseReader;
 
 import org.lcsim.contrib.scipp.beamcal.TileParameters;
@@ -100,7 +98,6 @@ public class TilerTest extends Driver {
     //and initializes all persistant data
     public void startOfData() {
         tiler = new BaseBeamCalorimeterTiler(params,cellSize,spreadFactor,true);
-        dbreader1 = new TileDataBaseReader(DBtileFile);
         
         
         try {
@@ -171,7 +168,7 @@ public class TilerTest extends Driver {
             
             
             
-            HashMap<String, BeamCalorimeterTile> layerMap = null;
+            HashMap<String, Double> layerMap = null;
             
             
             //apply hits to the geometry of the detector. background hits are 
@@ -181,11 +178,11 @@ public class TilerTest extends Driver {
             this.tiler.process(bghits);
             System.out.println("All hits processed");
             
-            List< HashMap<String, BeamCalorimeterTile> > alltiles;
+            ArrayList< HashMap<String, Double> > alltiles;
             alltiles = tiler.getTiles();
             
             int i = 0;
-            for ( HashMap<String, BeamCalorimeterTile> map : alltiles ) {
+            for ( HashMap<String, Double> map : alltiles ) {
                 if (i == layer) layerMap = map;
                     
                 
@@ -194,10 +191,9 @@ public class TilerTest extends Driver {
                 System.out.println("\n\n_______________________________________\n\n");
                 System.out.println("SHOWING LAYER " + i + "\n");
                 
-                for ( Map.Entry<String, BeamCalorimeterTile> entry : map.entrySet() ) {
+                for ( Map.Entry<String, Double> entry : map.entrySet() ) {
                     String key = entry.getKey();
-                    BeamCalorimeterTile tile = entry.getValue();
-                    double energy = tile.getEnergy();
+                    double energy = entry.getValue();
                     totalEnergy += energy;
                     
                     System.out.println("tile key/energy = " + key + ", " + energy);
@@ -259,17 +255,17 @@ public class TilerTest extends Driver {
     }//End Process
     
     
-    private short[] getID(double x, double y, HashMap<String, BeamCalorimeterTile> layerMap) {
+    private short[] getID(double x, double y, HashMap<String, Double> layerMap) {
         short[] badID = {0,0};
         
-        for ( Map.Entry<String, BeamCalorimeterTile> entry : layerMap.entrySet() ) {
+        for ( Map.Entry<String, Double> entry : layerMap.entrySet() ) {
             String key = entry.getKey();
-            BeamCalorimeterTile tile = entry.getValue();
-            double energy = tile.getEnergy();
-            
-            if ( tile.contains(new double[]{x,y}) ) return tile.getTileID();
+            short[] IDs = this.params.StringtoID(key);
+            double energy = entry.getValue();
+            short[] pointID = this.params.getID(x,y); 
+            if (IDs[0] == pointID[0] && IDs[1] == pointID[1]) {
+                return IDs;
         }
-        
         return badID;
     }
     
@@ -323,7 +319,6 @@ public class TilerTest extends Driver {
 
     //miscellenous variables
     private String DBtileFile;
-    private TileDataBaseReader dbreader1;
     private TileParameters params;
     private BaseBeamCalorimeterTiler tiler;
     private double cellSize;
