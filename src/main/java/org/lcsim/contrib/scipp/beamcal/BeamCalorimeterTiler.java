@@ -16,9 +16,6 @@
  */
 package org.lcsim.contrib.scipp.beamcal;
 
-import org.lcsim.contrib.scipp.beamcal.BeamCalorimeterTile;
-import org.lcsim.contrib.scipp.beamcal.database.DataBaseBeamCalorimeterTile;
-import org.lcsim.contrib.scipp.beamcal.database.TileDataBaseReader;
 
 import org.lcsim.event.SimCalorimeterHit;
 
@@ -50,25 +47,13 @@ public interface BeamCalorimeterTiler {
     
     //ACCESS FUNCTIONS
     
-    public List< HashMap<String, BeamCalorimeterTile> > getTiles();
+    public List< HashMap<String, Double> > getTiles();
     
     
-    public Map<String, BeamCalorimeterTile> getTiles_onLayer(int layer);
+    public Map<String, Double> getTiles_onLayer(int layer);
     
     
-    public List< HashMap<String, BeamCalorimeterTile> > getTiles_betweenLayers(
+    public List< HashMap<String, Double> > getTiles_betweenLayers(
             int start_layer, int end_layer);
     
-    
-    public List< HashMap<String, DataBaseBeamCalorimeterTile> > getDBTiles(
-            TileDataBaseReader db) throws java.sql.SQLException;
-    
-    
-    public Map<String, DataBaseBeamCalorimeterTile> getDBTiles_onLayer(int layer,
-            TileDataBaseReader db) throws java.sql.SQLException;
-            
-            
-    public List< HashMap<String, DataBaseBeamCalorimeterTile> > getDBTiles_betweenLayers(
-            int start_layer, int end_layer, 
-            TileDataBaseReader db) throws java.sql.SQLException;
-}
+    }

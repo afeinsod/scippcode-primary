@@ -20,13 +20,8 @@
 package org.lcsim.contrib.scipp.beamcal.base;
 
 import org.lcsim.contrib.scipp.beamcal.TileParameters;
-import org.lcsim.contrib.scipp.beamcal.BeamCalorimeterTile;
 import org.lcsim.contrib.scipp.beamcal.BeamCalorimeterTiler;
-import org.lcsim.contrib.scipp.beamcal.base.BaseBeamCalorimeterTile;
 import org.lcsim.contrib.scipp.beamcal.geometry.PolarCoords;
-
-import org.lcsim.contrib.scipp.beamcal.database.DataBaseBeamCalorimeterTile;
-import org.lcsim.contrib.scipp.beamcal.database.TileDataBaseReader;
 
 import org.lcsim.event.SimCalorimeterHit;
 
@@ -39,10 +34,10 @@ import java.util.Collections;
 import java.util.Comparator;
 
 
-
 public class BaseBeamCalorimeterTiler implements BeamCalorimeterTiler {
+    
 
-    //CONSTRUCTORS
+    //CONSTRUCTOR
     public BaseBeamCalorimeterTiler(TileParameters new_params, double size, int spread, boolean rmN, boolean algn){
         System.out.println("New parameters set to: " + new_params);
         this.params = new_params;
@@ -51,13 +46,11 @@ public class BaseBeamCalorimeterTiler implements BeamCalorimeterTiler {
         this.removeNegative = rmN;
         this.align = algn;
         
-        this.tile_maps = new ArrayList< HashMap<String, BeamCalorimeterTile> >();
+        this.tiles = new ArrayList(number_of_layers);
         
         for (int layer = 0; layer < number_of_layers; layer++) {
-            HashMap<String, BeamCalorimeterTile> map;
-            map = new HashMap<String, BeamCalorimeterTile>();
-            
-            tile_maps.add(map);
+            HashMap<String, Double> map= new HashMap();
+            tiles.add(layer, map);
         }
     }
 
@@ -96,10 +89,17 @@ public class BaseBeamCalorimeterTiler implements BeamCalorimeterTiler {
             for (i = 0; i < spreadFactor; i++) {
                 spreadPos[0] = (i*dim) + oldPos[0] + (dim/2.0) - (cellSize/2.0);
                 for (j = 0; j < spreadFactor; j++) {
+
                     spreadPos[1] = (j*dim) + oldPos[1] + (dim/2.0) - (cellSize/2.0);
+                    short[] tempID = params.getID(spreadPos[0],spreadPos[1]);
+                    String key = params.IDtoString(tempID[0],tempID[1]);
                     
-                    foundTile = this.findTileFor(spreadPos,layer,spreadEnergy);
-                    if (!foundTile) this.hash_new_tile(spreadPos,layer,spreadEnergy);
+                    if (tiles.get(layer).containsKey(key)) {
+                        tiles.get(layer).put(key, tiles.get(layer).get(key) + spreadEnergy);
+                    }
+                    else{
+                        tiles.get(layer).put(key, spreadEnergy);
+                    }
                 }
             }
         }
@@ -108,147 +108,41 @@ public class BaseBeamCalorimeterTiler implements BeamCalorimeterTiler {
     
     //Removes all tiles from the lists.
     public void clear() {
-        for ( Map<String, BeamCalorimeterTile> map : tile_maps ) {
+        for ( Map<String, Double> map : tiles ) {
             map.clear();
         }
-        tile_maps = null;
-        
-        this.tile_maps = new ArrayList< HashMap<String, BeamCalorimeterTile> >();
+        tiles = null;
+        this.tiles = new ArrayList(number_of_layers);
         
         for (int layer = 0; layer < number_of_layers; layer++) {
-            HashMap<String, BeamCalorimeterTile> map;
-            map = new HashMap<String, BeamCalorimeterTile>();
-            
-            tile_maps.add(map);
+            HashMap<String, Double> map= new HashMap();
+            tiles.add(layer, map);
         }
     }
-    
-    
-    //Identifies if there already exists a tile
-    //which the hit can be applied to, and adds energy
-    //to that tile if it does.
-    private boolean findTileFor(double[] pos, int layer, double energy) {
-        short[] tempID = params.getID(pos[0],pos[1]);
-        String key = params.IDtoString(tempID[0],tempID[1]);
-        
-        if ( tile_maps.get(layer).containsKey(key) ) {
-            tile_maps.get(layer).get(key).addEnergy(energy);
-            return true;
-        }
-        
-        else return false;
-    }
-    
-    
-    //creates a new tile with the given position on the given layer with the given energy,
-    //the places into the hash-table list.
-    private void hash_new_tile(double[] pos, int layer, double energy) {
-        BaseBeamCalorimeterTile new_tile;
-        
-        new_tile = new BaseBeamCalorimeterTile(this.params,pos,layer,energy);
-        String key = new_tile.toString();
-        
-        tile_maps.get(layer).put(key,new_tile);
-    }
-    
-    
+  
     
     //ACCESS FUNCTIONS
     
     //returns the entire list of hashtables (all tiles from all layers)
-    public List< HashMap<String, BeamCalorimeterTile> > getTiles() {
-        return tile_maps;
+    public List< HashMap<String, Double> > getTiles() {
+        return tiles;
     }
     
     
     //returns the tiles on the specified layer
-    public Map<String, BeamCalorimeterTile> getTiles_onLayer(int layer) {
-        return tile_maps.get(layer);
+    public Map<String, Double> getTiles_onLayer(int layer) {
+        return tiles.get(layer);
     }
     
     
     //returns the tiles on all the layers between the two provided layers
     //i.e. providing start_layer=3 and end_layer=8 will return tiles from
     //layers 3,4,5,6,7 but NOT from 8.
-    public List< HashMap<String, BeamCalorimeterTile> > getTiles_betweenLayers(
+    public List< HashMap<String, Double> > getTiles_betweenLayers(
             int start_layer, int end_layer) {
                 
-        return tile_maps.subList(start_layer,end_layer);
+        return tiles.subList(start_layer,end_layer);
     }
-    
-    
-    //same as getTiles, but with DB tiles. Note that this takes a while
-    public List< HashMap<String, DataBaseBeamCalorimeterTile> > getDBTiles(
-            TileDataBaseReader db) throws java.sql.SQLException{
-        
-        List< HashMap<String, DataBaseBeamCalorimeterTile> > dbtile_maps;
-        dbtile_maps = new ArrayList< HashMap<String, DataBaseBeamCalorimeterTile> >();
-        
-        for ( int i = 0; i < tile_maps.size(); i++ ) {
-            Map<String, BeamCalorimeterTile> map = tile_maps.get(i);
-            dbtile_maps.add( create_DBmap(map,db) );
-        }
-        
-        return dbtile_maps;
-    }
-    
-    
-    //same as getTiles_onLayer, but with DB tiles. Note that this takes a while
-    public Map<String, DataBaseBeamCalorimeterTile> getDBTiles_onLayer(int layer,
-            TileDataBaseReader db) throws java.sql.SQLException {
-        
-        Map<String, BeamCalorimeterTile> map = tile_maps.get(layer);
-        return create_DBmap(map,db);
-        
-        
-    }
-    
-    //same as getTiles_betweenLayers, but with DB tiles. Note that this takes a while
-    public List< HashMap<String, DataBaseBeamCalorimeterTile> > getDBTiles_betweenLayers(
-            int start_layer, int end_layer, 
-            TileDataBaseReader db) throws java.sql.SQLException{
-        
-        List< HashMap<String, DataBaseBeamCalorimeterTile> > dbtile_maps;
-        dbtile_maps = new ArrayList< HashMap<String, DataBaseBeamCalorimeterTile> >();
-        
-        List< HashMap<String, BeamCalorimeterTile> > sub_maps;
-        sub_maps = tile_maps.subList(start_layer,end_layer);
-        
-        
-        for ( int i = 0; i < sub_maps.size(); i++ ) {
-            Map<String, BeamCalorimeterTile> map = sub_maps.get(i);
-            dbtile_maps.add(create_DBmap(map,db) );
-        }
-        
-        return dbtile_maps;
-    }
-    
-    
-    //takes the given normal tile map and goes through each tile in it,
-    //generating a DBtile from that tile and adding it to a newly created
-    //Dbtile map.
-    private HashMap<String, DataBaseBeamCalorimeterTile> create_DBmap(
-            Map<String, BeamCalorimeterTile> map, TileDataBaseReader db)
-            throws java.sql.SQLException {
-                
-        HashMap<String, DataBaseBeamCalorimeterTile> DBmap;
-        DBmap = new HashMap<String, DataBaseBeamCalorimeterTile>();
-        
-        DataBaseBeamCalorimeterTile dbtile = null;
-        
-        for ( Map.Entry<String, BeamCalorimeterTile> entry : map.entrySet() ) {
-            String key = entry.getKey();
-            BeamCalorimeterTile old_tile = entry.getValue();
-            
-            dbtile = new DataBaseBeamCalorimeterTile(old_tile);
-            dbtile.setDBInfo(db);
-            
-            DBmap.put(key,dbtile);
-        }
-        
-        return DBmap;
-    }
-    
     
     
     private TileParameters params;
@@ -256,11 +150,6 @@ public class BaseBeamCalorimeterTiler implements BeamCalorimeterTiler {
     private int spreadFactor;
     private boolean removeNegative;
     private boolean align;
-    
-    private List< HashMap<String, BeamCalorimeterTile> > tile_maps;
-    
     private int number_of_layers = 50;
-    
-    
-    
+    private ArrayList<HashMap<String, Double>> tiles; 
 }
